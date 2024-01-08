@@ -1,24 +1,21 @@
 package controllers
 
 import (
-	"database/sql"
 	"encoding/json"
 	"net/http"
 	"strconv"
 
 	"github.com/gorilla/mux"
-	"github.com/sh3lwan/webgo/config"
 	"github.com/sh3lwan/webgo/models"
+	"github.com/sh3lwan/webgo/services"
 )
 
 var movies []models.Movie = []models.Movie{}
 
 var authors []models.User = []models.User{}
 
-var DB *sql.DB = config.DB()
-
 func GetMovies(w http.ResponseWriter, r *http.Request) {
-    DB.Query("SELECT * FROM `movies`;")
+	movies := services.SelectMovies()
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(movies)
