@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
+	"github.com/sh3lwan/webgo/errors"
 	"github.com/sh3lwan/webgo/models"
 	"github.com/sh3lwan/webgo/services"
 )
@@ -23,15 +24,18 @@ func GetMovies(w http.ResponseWriter, r *http.Request) {
 
 func AddMovie(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
-	id := FindLastId("movies")
 	title := r.FormValue("title")
 
-	author := CreateAuthor(r.FormValue("author"))
+	//author := CreateAuthor(r.FormValue("author"))
 
-	movies = append(movies, models.Movie{ID: id, Title: title, Auther: author})
+	movie := models.Movie{
+		Title: title,
+	}
+
+	movie = services.CreateMovie(movie)
 
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(movies)
+	json.NewEncoder(w).Encode(movie)
 }
 
 func ShowMovie(w http.ResponseWriter, r *http.Request) {
@@ -39,13 +43,24 @@ func ShowMovie(w http.ResponseWriter, r *http.Request) {
 
 	paramId := mux.Vars(r)["id"]
 
-	id, err := strconv.Atoi(paramId)
+	id, err := strconv.ParseInt(paramId, 10, 64)
 
-	if err == nil {
-		movie := FindMovie(id)
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(movie)
+	if err != nil {
+		json.NewEncoder(w).Encode(errors.NotFound())
+		w.WriteHeader(http.StatusNotFound)
+        return 
 	}
+
+	movie, err := services.GetMovie(id)
+
+	if err != nil {
+		json.NewEncoder(w).Encode(errors.NotFound())
+		w.WriteHeader(http.StatusNotFound)
+        return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(movie)
 }
 
 func FindMovie(Id int) *models.Movie {
