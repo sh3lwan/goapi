@@ -2,7 +2,8 @@ package config
 
 import (
 	"database/sql"
-    "time"
+	"time"
+
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -22,7 +23,7 @@ func Init() {
 	DBConnection = conn
 }
 
-func CloseConnection() {
+func Close() {
 	err := DBConnection.Close()
 	if err != nil {
 		panic(err)

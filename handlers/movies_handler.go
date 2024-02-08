@@ -1,4 +1,4 @@
-package controllers
+package handlers
 
 import (
 	"encoding/json"
@@ -8,7 +8,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/sh3lwan/webgo/errors"
 	"github.com/sh3lwan/webgo/models"
-	"github.com/sh3lwan/webgo/services"
+	"github.com/sh3lwan/webgo/repositories"
 )
 
 var movies []models.Movie = []models.Movie{}
@@ -16,7 +16,7 @@ var movies []models.Movie = []models.Movie{}
 var authors []models.User = []models.User{}
 
 func GetMovies(w http.ResponseWriter, r *http.Request) {
-	movies := services.SelectMovies()
+	movies, _ := repositories.SelectMovies()
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(movies)
@@ -28,11 +28,11 @@ func AddMovie(w http.ResponseWriter, r *http.Request) {
 
 	//author := CreateAuthor(r.FormValue("author"))
 
-	movie := models.Movie{
+	movie := &models.Movie{
 		Title: title,
 	}
 
-	movie = services.CreateMovie(movie)
+	movie, _ = repositories.CreateMovie(movie)
 
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(movie)
@@ -48,15 +48,15 @@ func ShowMovie(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		json.NewEncoder(w).Encode(errors.NotFound())
 		w.WriteHeader(http.StatusNotFound)
-        return 
+		return
 	}
 
-	movie, err := services.GetMovie(id)
+	movie, err := repositories.GetMovie(id)
 
 	if err != nil {
 		json.NewEncoder(w).Encode(errors.NotFound())
 		w.WriteHeader(http.StatusNotFound)
-        return
+		return
 	}
 
 	w.WriteHeader(http.StatusOK)
