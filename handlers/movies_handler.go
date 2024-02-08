@@ -6,7 +6,6 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
-	"github.com/sh3lwan/webgo/errors"
 	"github.com/sh3lwan/webgo/models"
 	"github.com/sh3lwan/webgo/repositories"
 )
@@ -23,13 +22,11 @@ func GetMovies(w http.ResponseWriter, r *http.Request) {
 }
 
 func AddMovie(w http.ResponseWriter, r *http.Request) {
-	r.ParseForm()
-	title := r.FormValue("title")
+    var movie *models.Movie
 
-	//author := CreateAuthor(r.FormValue("author"))
-
-	movie := &models.Movie{
-		Title: title,
+	if err := json.NewDecoder(r.Body).Decode(&movie); err != nil {
+		http.Error(w, "Failed to parse request body", http.StatusBadRequest)
+		return
 	}
 
 	movie, _ = repositories.CreateMovie(movie)
@@ -46,16 +43,14 @@ func ShowMovie(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.ParseInt(paramId, 10, 64)
 
 	if err != nil {
-		json.NewEncoder(w).Encode(errors.NotFound())
-		w.WriteHeader(http.StatusNotFound)
+		http.Error(w, "Element not found"+err.Error(), http.StatusNotFound)
 		return
 	}
 
 	movie, err := repositories.GetMovie(id)
 
 	if err != nil {
-		json.NewEncoder(w).Encode(errors.NotFound())
-		w.WriteHeader(http.StatusNotFound)
+		http.Error(w, "Element not found"+err.Error(), http.StatusNotFound)
 		return
 	}
 
