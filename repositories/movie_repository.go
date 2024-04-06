@@ -4,13 +4,14 @@ import (
 	"database/sql"
 
 	"github.com/sh3lwan/webgo/config"
+	"github.com/sh3lwan/webgo/models"
 	. "github.com/sh3lwan/webgo/models"
 )
 
 var db *sql.DB = config.DB()
 
 func SelectMovies() ([]Movie, error) {
-	movies := make([]Movie, 0, 10)
+	var movies []models.Movie = []models.Movie{}
 	rows, err := db.Query("SELECT id, title FROM movies;")
 
 	if err != nil {

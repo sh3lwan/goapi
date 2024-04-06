@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -15,14 +16,18 @@ var movies []models.Movie = []models.Movie{}
 var authors []models.User = []models.User{}
 
 func GetMovies(w http.ResponseWriter, r *http.Request) {
-	movies, _ := repositories.SelectMovies()
+	movies, err := repositories.SelectMovies()
+
+	if err != nil {
+		log.Fatal(err.Error())
+	}
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(movies)
 }
 
 func AddMovie(w http.ResponseWriter, r *http.Request) {
-    var movie *models.Movie
+	var movie *models.Movie
 
 	if err := json.NewDecoder(r.Body).Decode(&movie); err != nil {
 		http.Error(w, "Failed to parse request body", http.StatusBadRequest)
