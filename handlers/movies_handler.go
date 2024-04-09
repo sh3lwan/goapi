@@ -9,6 +9,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/sh3lwan/webgo/models"
 	"github.com/sh3lwan/webgo/repositories"
+	"github.com/sh3lwan/webgo/views"
 )
 
 var movies []models.Movie = []models.Movie{}
@@ -22,8 +23,9 @@ func GetMovies(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err.Error())
 	}
 
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(movies)
+	title := r.URL.Query().Get("title")
+
+	views.MoviesIndex(title, movies).Render(r.Context(), w)
 }
 
 func AddMovie(w http.ResponseWriter, r *http.Request) {
