@@ -2,3 +2,6 @@ vender/
 vendor/*
 /vendor/
 .env
+/node_modules
+node_modules/
+node_modules/*
