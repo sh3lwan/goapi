@@ -1,7 +1,4 @@
-vender/
-vendor/*
-/vendor/
 .env
-/node_modules
+vender/
 node_modules/
-node_modules/*
+tmp/
