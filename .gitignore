@@ -1,4 +1,4 @@
 .env
-vender/
+vendor/
 node_modules/
 tmp/
