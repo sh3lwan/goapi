@@ -10,3 +10,9 @@ type Movie struct {
 	Title  string `json:"title"`
 	Auther *User  `json:"author"`
 }
+
+func NewMovie(title string) *Movie {
+	return &Movie{
+		Title: title,
+	}
+}

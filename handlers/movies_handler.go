@@ -29,17 +29,15 @@ func GetMovies(w http.ResponseWriter, r *http.Request) {
 }
 
 func AddMovie(w http.ResponseWriter, r *http.Request) {
-	var movie *models.Movie
+	body := models.NewMovie(r.FormValue("title"))
 
-	if err := json.NewDecoder(r.Body).Decode(&movie); err != nil {
-		http.Error(w, "Failed to parse request body", http.StatusBadRequest)
-		return
+	movie, err := repositories.CreateMovie(body)
+
+	if err != nil {
+		log.Fatal(err.Error())
 	}
 
-	movie, _ = repositories.CreateMovie(movie)
-
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(movie)
+	views.MovieItem(*movie).Render(r.Context(), w)
 }
 
 func ShowMovie(w http.ResponseWriter, r *http.Request) {
